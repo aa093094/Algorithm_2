@@ -3,60 +3,45 @@ import timeit
 import random
 
 def collinearPoints(points):
-    sortedList = []
-    for i in range(len(points)):
+    resultSet = set()
+    n = len(points)
+    
+    for i in range(n):
         slopeList = []
-        for j in range(len(points)):
-            if i == j:
-                slopeList.append((j, float('-inf')))
-            else:
+        for j in range(n):
+            if i != j:
                 if points[j][0] == points[i][0]:
                     slope = float('inf')
                 else:
                     slope = (points[j][1] - points[i][1]) / (points[j][0] - points[i][0])
-                slopeList.append((j, slope))
-        slopeList.sort(key = lambda p:(p[1], p[0]))
-        sortedList.append(slopeList)
-    
-    colList = []
-    for s, list in enumerate(sortedList):
+                    slope = math.floor(slope*1000000)/1000000
+                slopeList.append((slope, points[j]))
+        slopeList.sort(key = lambda p:(p[0], p[1][0], p[1][1]))
+
         count = 0
-        print(list)
-        for i in range(len(list) - 1):
-            if list[i][1] == list[i+1][1] and count == 0:
-                count = 3
-                sp = i
-            elif list[i][1] == list[i+1][1] and count != 0 and i != (len(list) - 2):
-                count += 1
-            elif list[i][1] != list[i+1][1] and count >= 4:
-                pointList = []
-                lp = i
-                count = 0
-                pointList.append(s)
-                while sp <= lp:
-                    pointList.append(list[sp][0])
-                    sp += 1
-                sp = -1
-                lp = -1
-                colList.append(pointList)
-            elif list[i][1] == list[i+1][1] and count >= 4 and i == (len(list) - 2):
-                pointList = []
-                lp = i + 1
-                count = 0
-                pointList.append(s)
-                while sp <= lp:
-                    pointList.append(list[sp][0])
-                    sp += 1
-                sp = -1
-                lp = -1
-                colList.append(pointList)
+        colList = []
+        for k in range(len(slopeList) - 1):
+            if slopeList[k][0] == slopeList[k+1][0]:
+                if count == 0:
+                    colList = [points[i], slopeList[k][1], slopeList[k+1][1]]
+                    count = 3
+                else:
+                    colList.append(slopeList[k+1][1])
+                    count += 1
             else:
-                sp = -1
+                if count >= 4:
+                    colList.sort()
+                    slPoints = (colList[0][0], colList[0][1], colList[-1][0], colList[-1][1])
+                    resultSet.add(slPoints)
                 count = 0
-
-    print(colList)
-
-    return None
+        
+        if count >= 4:
+            colList.sort()
+            slPoints = (colList[0][0], colList[0][1], colList[-1][0], colList[-1][1])
+            resultSet.add(slPoints)
+     
+    resultList = sorted(resultSet, key = lambda p:(p[0], p[1], p[2], p[3]))
+    return resultList
 
 
 def correctnessTest(input, expected_output, correct):
