@@ -20,6 +20,7 @@ def collinearPoints(points):
 
         count = 0
         colList = []
+        
         for k in range(len(slopeList) - 1):
             if slopeList[k][0] == slopeList[k+1][0]:
                 if count == 0:
