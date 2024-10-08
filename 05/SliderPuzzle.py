@@ -135,6 +135,7 @@ def solveManhattan(initialBoard):
                 result_list.append(opt_stat[1])
                 opt_stat = opt_stat[3]
             result_list.append(opt_stat[1])
+            result_list.reverse
             return result_list
         
         while opt_stat[1].isGoal() != True:
