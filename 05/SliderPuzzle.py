@@ -116,46 +116,30 @@ class Board:
 
 def solveManhattan(initialBoard):
     assert(isinstance(initialBoard, Board))
+    
     if initialBoard.isGoal() == True:
         return [initialBoard]
-    else:
-        man_dis = initialBoard.manhattan()
-        pq = PriorityQueue()
-        pq.put((man_dis, initialBoard, 0, None))
-        last_stat = pq.get()
+    
+    pq = PriorityQueue()
+    pq.put((initialBoard.manhattan(), initialBoard, 0, None))
+    
+    while not pq.empty():
+        _, current_board, moves, last_stat = pq.get()
 
-        neighbor_list = initialBoard.neighbors()
-        for neighbor in neighbor_list:
-            pq.put((neighbor.manhattan() + 1, neighbor, 1, last_stat))
-
-        opt_stat = pq.get()
-        if opt_stat[1].isGoal() == True:
+        if current_board.isGoal():
             result_list = []
-            while opt_stat[3] != None:
-                result_list.append(opt_stat[1])
-                opt_stat = opt_stat[3]
-            result_list.append(opt_stat[1])
-            result_list.reverse
+            while current_board is not None:
+                result_list.append(current_board)
+                if last_stat is not None:
+                    current_board, _, last_stat = last_stat
+                else:
+                    current_board = None
+            result_list.reverse()
             return result_list
-        
-        while opt_stat[1].isGoal() != True:
-            last_stat = opt_stat
 
-            neighbor_list = last_stat[1].neighbors()
-            for neighbor in neighbor_list:
-                if neighbor.__eq__(last_stat[3][2]) == False:    
-                    pq.put((neighbor.manhattan() + last_stat[2] + 1, neighbor, last_stat[2] + 1, last_stat))
-            
-            opt_stat = pq.get()
-        
-        result_list = []
-        while opt_stat[3] != None:
-            result_list.append(opt_stat[1])
-            opt_stat = opt_stat[3]
-        result_list.append(opt_stat[1])
-        result_list.reverse()
-
-        return result_list 
+        for neighbor in current_board.neighbors():
+            if last_stat is None or neighbor != last_stat[0]:    
+                pq.put((neighbor.manhattan() + moves + 1, neighbor, moves + 1, (current_board, moves, last_stat)))
     
     return None
     
